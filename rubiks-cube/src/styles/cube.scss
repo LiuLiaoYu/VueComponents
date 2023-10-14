@@ -1,0 +1,139 @@
+@import './animation.scss';
+
+[hide] {
+  opacity: 0;
+}
+
+.magic-cube {
+  transform: rotateX(155deg) rotateZ(180deg) rotateY(-45deg);
+
+  // animation: wer 4s 0s infinite alternate;
+  // animation: rz 4s 0s infinite alternate;
+}
+
+.magic-cube {
+  --cube-length: 18vw;
+  --cube-half-length: calc(var(--cube-length) / 2);
+
+  transform-style: preserve-3d;
+
+  width: var(--cube-length);
+  height: var(--cube-length);
+
+  transition: all 0ms;
+
+  .face.rotating.animated{
+    transition: all 200ms;
+  }
+
+  .face.rotating .side {
+    opacity: 1;
+  }
+
+  .face {
+    position: absolute;
+    transform-style: preserve-3d;
+
+    width: var(--cube-length);
+    height: var(--cube-length);
+
+    .front {
+      width: 100%;
+      height: 100%;
+
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+
+      div {
+        border-left: 1px solid black;
+        border-bottom: 1px solid black;
+      }
+    }
+
+    .side {
+      --cube-third-length: calc(var(--cube-length) / 3);
+      --cube-sixth-length-neg: calc(var(--cube-third-length)/-2);
+
+      opacity: 0;
+      position: absolute;
+      transform-style: preserve-3d;
+      top: var(--cube-third-length);
+
+      .bar {
+        display: grid;
+        position: absolute;
+        width: calc(var(--cube-length));
+        height: calc(var(--cube-third-length));
+        grid-template-columns: repeat(3, 1fr);
+
+        div {
+          border-bottom: 1px solid black;
+          border-right: 1px solid black;
+
+          &:nth-of-type(1) {
+            border-left: 1px solid black;
+          }
+        }
+      }
+    }
+
+    $x: 0 -1 2 0 1 0;
+    $y: 1 0 0 -1 0 0;
+    $z: 0 1 1 -1 0 0;
+    $dir: row column;
+    $bt: 1 4 7 1 2 3;
+    $br: 7 8 9 3 6 9;
+
+    @for $i from 1 to 7 {
+      &:nth-of-type(#{$i}) {
+        transform: rotateX(#{nth($x, $i)*90}deg) rotateY(#{nth($y, $i)*90}deg) rotateZ(#{nth($z, $i)*90}deg) translateZ(var(--cube-half-length));
+
+        .front {
+          grid-auto-flow: #{nth($dir, 2 - $i % 2)};
+
+          @for $j from 1 to 4 {
+
+            // ! not so good
+            :nth-child(#{nth($bt, $j + ($i % 2) * 3)}) {
+              border-top: 1px solid black;
+            }
+
+            :nth-child(#{nth($br, $j + ( $i % 2) * 3)}) {
+              border-right: 1px solid black;
+            }
+          }
+        }
+
+        .side .bar div {
+          @if $i%2==1 {
+            // ! not so good
+            border-top: 1px solid black;
+          }
+        }
+      }
+    }
+
+    $sx: 1 1 -1 1;
+    $sz: 0 -1 2 1;
+
+    @for $i from 1 to 5 {
+      .side .bar:nth-of-type(#{$i}) {
+        @if $i%2 ==1 {
+          transform: rotateX(#{nth($sx,$i)*90}deg) rotateZ(#{nth($sz,$i)*90}deg) translate3d(0, var(--cube-sixth-length-neg), var(--cube-half-length));
+        }
+
+        @if $i%2==0 {
+          transform: rotateZ(#{nth($sz,$i)*90}deg) rotateX(#{nth($sx,$i)*90}deg) translate3d(0, var(--cube-sixth-length-neg), var(--cube-half-length));
+        }
+      }
+    }
+
+  }
+
+}
+
+
+.rotatex90deg{
+  rotate: x 90deg;
+}
